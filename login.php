@@ -56,6 +56,25 @@
 		
 	} 
 
+	
+	if ( $signupEmailError == "*" &&
+		$signupPasswordError == "*" &&
+		isset($_POST["signupEmail"]) &&
+		isset($_POST["signupPassword"])
+	){
+		//vigu ei olnud, kõik on olemas
+		echo "Salvestan...<br>";
+		echo "email ".$signupEmail. "<br>";
+		echo "parool ".$_POST["signupPassword"]."<br>";
+		
+		$password = hash("sha512", $_POST["signupPassword"]);
+		
+		echo $password;
+		
+	}	
+	
+	
+	
 ?>
 
  <!DOCTYPE html>
