@@ -1,5 +1,7 @@
 <?php
 
+	require("../../config.php");
+
 	//var_dump($_GET);
 	
 	//echo "<br>";
@@ -9,7 +11,6 @@
 	// MUUTUJAD
 	$signupEmailError= "*";
 	$signupEmail = "";
-	
 	
 	//kas keegi vajutas nuppu ja see on üldse olemas
 	
@@ -56,7 +57,6 @@
 		
 	} 
 
-	
 	if ( $signupEmailError == "*" &&
 		$signupPasswordError == "*" &&
 		isset($_POST["signupEmail"]) &&
@@ -69,11 +69,29 @@
 		
 		$password = hash("sha512", $_POST["signupPassword"]);
 		
-		echo $password;
+		echo $password."<br>";
 		
-	}	
+		
+		//echo $mysqli->error; kui bind_param juures viga
+		
+		//loon ühenduse andmebaasi
+		$database = "if16_raily_4";
+		$mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
+		
+		$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUE (?,?)");
+		
+		//asendan küsimärgid, iga märgikohta tuleb lisada üks täht-mis tüüpi muutuja on
+		//s-string
+		//i-int
+		//d-double
+		$stmt->bind_param("ss",$signupEmail, $password);
+		if ($stmt->execute()) {
+			echo "õnnestus";
+		}	else { "ERROR".$stmt->error;
+			
+		}
 	
-	
+	}
 	
 ?>
 
