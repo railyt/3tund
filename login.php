@@ -1,6 +1,7 @@
 <?php
 
 	require("../../config.php");
+	require("functions.php");
 
 	//var_dump($_GET);
 	
@@ -71,25 +72,8 @@
 		
 		echo $password."<br>";
 		
+		signup($signupEmail, $password);
 		
-		//echo $mysqli->error; kui bind_param juures viga
-		
-		//loon ühenduse andmebaasi
-		$database = "if16_raily_4";
-		$mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
-		
-		$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUE (?,?)");
-		
-		//asendan küsimärgid, iga märgikohta tuleb lisada üks täht-mis tüüpi muutuja on
-		//s-string
-		//i-int
-		//d-double
-		$stmt->bind_param("ss",$signupEmail, $password);
-		if ($stmt->execute()) {
-			echo "õnnestus";
-		}	else { "ERROR".$stmt->error;
-			
-		}
 	
 	}
 	
