@@ -2,7 +2,7 @@
 
 	require("../../config.php");
 	require("functions.php");
-
+	
 	//var_dump($_GET);
 	
 	//echo "<br>";
@@ -122,7 +122,6 @@
 			<?php } else { ?>
 				<input type="radio" name="gender" value="male" > male<br>
 			<?php } ?>
-			
 			
 			<?php if ($gender == "other") { ?>
 				<input type="radio" name="gender" value="other" checked> other<br>
