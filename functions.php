@@ -57,7 +57,6 @@
 	}
 	
 	function saveEvent($age, $color) {
-		
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		
 		$stmt = $mysqli->prepare("INSERT INTO whistle (age, color) VALUE (?, ?)");
@@ -66,13 +65,32 @@
 		$stmt->bind_param("is", $age, $color);
 		
 		if ( $stmt->execute() ) {
-			echo "õnnestus";
+			echo "õnnestus <br>";
 		} else {
 			echo "ERROR ".$stmt->error;
 		}
 		
 	}
 	
+	
+	function getAllPeople(){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt=$mysqli->prepare("SELECT id, age, color FROM whistle");
+		$stmt->bind_result($id, $age, $color);
+		$stmt->execute();
+		$results=array();
+		//tsüklissisu toiimib seni kaua, mitu rida SQL lausega tuleb
+		while($stmt->fetch()) {
+			$human=new StdClass();
+			$human->id=$id;
+			$human->age=$age;
+			$human->color=$color;
+			//echo $color."<br>";
+			array_push($results, $human);
+		}
+		return $results;
+	}
 	
 	
 	
