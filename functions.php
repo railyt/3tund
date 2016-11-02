@@ -42,6 +42,7 @@
 				$_SESSION["userId"] = $id;
 				$_SESSION["userEmail"] = $emailFromDb;
 				header("Location: data.php");
+				exit();
 			} else {
 				$notice = "Parool vale";
 			}
@@ -76,7 +77,7 @@
 	function getAllPeople(){
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		
-		$stmt=$mysqli->prepare("SELECT id, age, color FROM whistle");
+		$stmt=$mysqli->prepare("SELECT id, age, color FROM whistle WHERE deleted IS NULL");
 		$stmt->bind_result($id, $age, $color);
 		$stmt->execute();
 		$results=array();
@@ -92,9 +93,143 @@
 		return $results;
 	}
 	
+	function cleanInput($input) {
+		$input=trim($input);
+		$input=stripslashes($input);
+		$input=htmlspecialchars($input);
+		return $input;
+	}
 	
 	
+	function saveInterest ($interest) {	
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 
+		$stmt = $mysqli->prepare("INSERT INTO interests (interest) VALUES (?)");
+	
+		echo $mysqli->error;
+		
+		$stmt->bind_param("s", $interest);
+		
+		if($stmt->execute()) {
+			echo "salvestamine õnnestus";
+		} else {
+		 	echo "ERROR ".$stmt->error;
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		
+	}
+	
+	function saveUserInterest ($interest) {	
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+
+		$stmt = $mysqli->prepare("SELECT id from user_interests_4 where user_id=? AND interest_id=?");
+		$stmt->bind_param("ii", $_SESSION["userId"], $interest);
+		$stmt->execute();
+		//kas oli rida
+		if($stmt->fetch()){
+			//oli olemas
+			echo"juba olemas";
+			//pärast returni koodi ei vaadata
+			return;
+		}
+		//kui ei olnud
+		$stmt->close();
+		
+		
+		
+		
+		$stmt = $mysqli->prepare("INSERT INTO user_interests_4(user_id, interest_id) VALUES (?, ?)");
+	
+		echo $mysqli->error;
+		
+		$stmt->bind_param("ii", $_SESSION["userId"], $interest);
+		
+		if($stmt->execute()) {
+			echo "salvestamine õnnestus";
+		} else {
+		 	echo "ERROR ".$stmt->error;
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		
+	}
+	
+	function getAllInterests() {
+		
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("
+			SELECT id, interest
+			FROM interests
+		");
+		echo $mysqli->error;
+		
+		$stmt->bind_result($id, $interest);
+		$stmt->execute();
+		
+		
+		//tekitan massiivi
+		$result = array();
+		
+		// tee seda seni, kuni on rida andmeid
+		// mis vastab select lausele
+		while ($stmt->fetch()) {
+			
+			//tekitan objekti
+			$i = new StdClass();
+			
+			$i->id = $id;
+			$i->interest = $interest;
+		
+			array_push($result, $i);
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		
+		return $result;
+	}
+	
+	function getUserInterests() {
+		
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("
+			????????????????
+		");
+		//SESSION USER ID
+		echo $mysqli->error;
+		
+		$stmt->bind_result($interest);
+		$stmt->execute();
+		
+		
+		//tekitan massiivi
+		$result = array();
+		
+		// tee seda seni, kuni on rida andmeid
+		// mis vastab select lausele
+		while ($stmt->fetch()) {
+			
+			//tekitan objekti
+			$i = new StdClass();
+			
+			$i->interest = $interest;
+		
+			array_push($result, $i);
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		
+		return $result;
+	}
+	
+	
+	
 	/*function sum($x, $y) {
 		return $x + $y;
 	}

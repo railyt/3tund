@@ -5,21 +5,26 @@
 	//kui ei ole sisse loginud, suunan login lehele
 	if(!isset($_SESSION["userId"])){
 		header("Location: login.php");
+		exit();
 	}
 	
 	//kas aadressireal on logout
 	if (isset($_GET["logout"])) {
-		SESSION_destroy();
+		session_destroy();
 		header("Location: login.php");
+		exit();
 	}
 	
 	//kontrollin kas tühi
 		if ( isset($_POST["age"]) && 
-		 isset($_POST["color"]) && 
-		 !empty($_POST["age"]) &&
-		 !empty($_POST["color"]) 
+		isset($_POST["color"]) && 
+		!empty($_POST["age"]) &&
+		!empty($_POST["color"]) 
 	) {
-		saveEvent($_POST["age"], $_POST["color"]);
+		$color = cleanInput($_POST["color"]);
+		saveEvent(cleanInput($_POST["age"]), $color);
+		header("Location: login.php");
+		exit();
 	}
 	$people=getAllPeople();
 	echo"<pre>";
@@ -35,7 +40,7 @@
 
 
 <p>
-	Tere tulemast <?=$_SESSION["userEmail"];?>!
+	Tere tulemast <a href="user.php"><?=$_SESSION["userEmail"];?></a>!
 	<a href="?logout=1">logi välja</a>
 </p>
 
@@ -69,7 +74,8 @@
 			$html .="<td>".$p->id."</td>";
 			$html .="<td>".$p->age."</td>";
 			$html .="<td>".$p->color."</td>";
-	$html .="</tr>";	
+			$html .= "<td><a href='edit.php?id=".$p->id."'>edit.php</a></td>";
+			$html .="</tr>";	
 	}
 	$html .="</table>";
 	echo $html;
